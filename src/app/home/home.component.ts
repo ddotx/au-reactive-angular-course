@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {Course, sortCoursesBySeqNo} from '../model/course';
 import {interval, noop, Observable, of, throwError, timer} from 'rxjs';
-import {catchError, delay, delayWhen, filter, finalize, map, retryWhen, shareReplay, tap} from 'rxjs/operators';
+import {catchError, delay, delayWhen, filter, finalize, map, retryWhen, shareReplay, tap, groupBy} from 'rxjs/operators';
 import {HttpClient} from '@angular/common/http';
 import {MatDialog, MatDialogConfig} from '@angular/material/dialog';
 import {CourseDialogComponent} from '../course-dialog/course-dialog.component';
+import { CoursesService } from '../services/courses.service';
 
 
 @Component({
@@ -14,18 +15,21 @@ import {CourseDialogComponent} from '../course-dialog/course-dialog.component';
 })
 export class HomeComponent implements OnInit {
 
-  beginnerCourses: Course[];
+/*  beginnerCourses: Course[];
+  advancedCourses: Course[]; */
+  beginnerCourses$: Observable<Course[]>;
+  advancedCourses$: Observable<Course[]>;
 
-  advancedCourses: Course[];
-
-
-  constructor(private http: HttpClient, private dialog: MatDialog) {
+  constructor(
+    // private http: HttpClient,
+    private coursesService: CoursesService
+  ) {
 
   }
 
   ngOnInit() {
-
-    this.http.get('/api/courses')
+    // REVIEW - not reuseable elsewhere ==> move to service
+  /*  this.http.get('/api/courses')
       .subscribe(
         res => {
 
@@ -35,23 +39,33 @@ export class HomeComponent implements OnInit {
 
           this.advancedCourses = courses.filter(course => course.category == "ADVANCED");
 
-        });
+        }); */
+    // STUB - Section 2.7
+    /* const courses$ = this.coursesService.loadAllCourses().pipe(
+      map(courses => courses.sort(sortCoursesBySeqNo))
+    );
+    this.beginnerCourses$ = courses$.pipe(
+      map(courses => courses.filter(c => c.category === 'BEGINNER'))
+    );
+    this.advancedCourses$ = courses$.pipe(
+      map(courses => courses.filter(c => c.category === 'ADVANCED'))
+    ); */
+    this.reloadCourses();
 
   }
 
-  editCourse(course: Course) {
-
-    const dialogConfig = new MatDialogConfig();
-
-    dialogConfig.disableClose = true;
-    dialogConfig.autoFocus = true;
-    dialogConfig.width = "400px";
-
-    dialogConfig.data = course;
-
-    const dialogRef = this.dialog.open(CourseDialogComponent, dialogConfig);
-
+  reloadCourses() {
+    const courses$ = this.coursesService.loadAllCourses().pipe(
+      map(courses => courses.sort(sortCoursesBySeqNo))
+    );
+    this.beginnerCourses$ = courses$.pipe(
+      map(courses => courses.filter(c => c.category === 'BEGINNER'))
+    );
+    this.advancedCourses$ = courses$.pipe(
+      map(courses => courses.filter(c => c.category === 'ADVANCED'))
+    );
   }
+
 
 }
 

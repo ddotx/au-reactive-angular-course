@@ -75,10 +75,11 @@ $mat-accent: (
 
 
 // Define a theme.
-$primary: mat-palette($mat-pink);
+$primary: mat-palette($mat-green);
 $accent:  mat-palette($mat-accent, A200, A100, A400);
 
-$theme: mat-light-theme($primary, $accent);
+// $theme: mat-light-theme($primary, $accent);
+$theme: mat-dark-theme($primary, $accent);
 
 // Include all theme styles for the components.
 @include angular-material-theme($theme);
