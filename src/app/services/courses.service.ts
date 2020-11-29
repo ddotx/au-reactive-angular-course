@@ -9,7 +9,9 @@ import { Course } from '../model/course';
 })
 export class CoursesService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    console.warn('---DATA FROM SERVICE---')
+  }
 
   loadAllCourses(): Observable<Course[]> {
     return this.http.get<Course[]>("/api/courses")
