@@ -15,7 +15,7 @@ import { Lesson } from '../model/lesson';
 export class CoursesService {
 
   constructor(private http: HttpClient) {
-
+    console.warn('---DATA FROM SERVICE---')
   }
 
   loadCourseById(courseId: number) {
