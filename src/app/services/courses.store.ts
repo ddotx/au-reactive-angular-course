@@ -6,6 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { LoadingService } from '../loading/loading.service';
 import { MessagesService } from '../messages/messages.service';
 
+/**
+ * Global Singleton
+ */
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +21,12 @@ export class CoursesStore {
 
   constructor(
     private http: HttpClient,
-    private loading: LoadingService,
-    private messages: MessagesService) {
+    private loading: LoadingService, // <--from provider in app module
+    private messages: MessagesService // <--from provider in app module
+  ) {
 
     console.warn('---DATA FROM STORE---')
-    this.loadAllCourses();
+    this.loadAllCourses(); // run once during app lifecycle
 
   }
 
@@ -47,6 +51,9 @@ export class CoursesStore {
 
   saveCourse(courseId: string, changes: Partial<Course>): Observable<any> {
 
+    // ANCHOR: Store Optimistic Data Modification
+
+    // REVIEW: STEP 1 - Update data in Memory
     const courses = this.subject.getValue();
 
     const index = courses.findIndex(course => course.id == courseId);
@@ -56,18 +63,22 @@ export class CoursesStore {
       ...changes
     };
 
-    const newCourses: Course[] = courses.slice(0);
+    const newCourses: Course[] = courses.slice(0); // completed copied array
 
     newCourses[index] = newCourse;
 
     this.subject.next(newCourses);
 
+    // REVIEW: STEP 2 - Save to Backend
     return this.http.put(`/api/courses/${courseId}`, changes)
       .pipe(
         catchError(err => {
           const message = "Could not save course";
           console.log(message, err);
           this.messages.showErrors(message);
+
+          this.subject.next(courses) // * -> Rollback to latest value
+
           return throwError(err);
         }),
         shareReplay()
