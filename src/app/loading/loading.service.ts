@@ -1,5 +1,6 @@
 /**
  * Shared Service
+ * Decoupled component communication
  */
 
 import { Injectable } from "@angular/core";

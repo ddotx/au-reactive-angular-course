@@ -13,6 +13,7 @@ export class MessagesService {
     );
 
   showErrors(...errors: string[]) {
+    console.warn(errors)
     this.subject.next(errors);
   }
 

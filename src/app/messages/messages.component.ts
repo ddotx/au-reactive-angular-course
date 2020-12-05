@@ -27,13 +27,11 @@ export class MessagesComponent implements OnInit {
       .pipe(
         tap(() => this.showMessages = true)
       );
-
   }
 
 
   onClose() {
     this.showMessages = false;
-
   }
 
 }

@@ -41,7 +41,7 @@ export class HomeComponent implements OnInit {
         map(courses => courses.sort(sortCoursesBySeqNo)),
         catchError(err => {
           const message = "Could not load courses"
-          this.messagesService.showErrors(message)
+          this.messagesService.showErrors(message, err.message)
           console.log(message, err)
           return throwError(err) // => to terminate obs chain
         })
