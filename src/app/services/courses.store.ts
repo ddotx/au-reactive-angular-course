@@ -41,7 +41,7 @@ export class CoursesStore {
           console.log(message, err);
           return throwError(err);
         }),
-        tap(courses => this.subject.next(courses))
+        tap(courses => this.subject.next(courses)) // <-- if success
       );
 
     this.loading.showLoaderUntilCompleted(loadCourses$)
@@ -54,7 +54,7 @@ export class CoursesStore {
     // ANCHOR: Store Optimistic Data Modification
 
     // REVIEW: STEP 1 - Update data in Memory
-    const courses = this.subject.getValue();
+    const courses = this.subject.getValue(); // <- existing data
 
     const index = courses.findIndex(course => course.id == courseId);
 
@@ -67,7 +67,7 @@ export class CoursesStore {
 
     newCourses[index] = newCourse;
 
-    this.subject.next(newCourses);
+    this.subject.next(newCourses); // -> new data to STATE
 
     // REVIEW: STEP 2 - Save to Backend
     return this.http.put(`/api/courses/${courseId}`, changes)
